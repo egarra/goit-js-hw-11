@@ -87,7 +87,8 @@ function checkPosition() {
     fetchImages(query = '', page, per_page)
         .then(({data}) => {
             Notify.success(`Hooray! We found ${per_page} images more!`);
-
+            onRenderGallery(data.hits)
+            
             if(page >= Math.round((data.totalHits / data.hits.length))) {
                 showMoreBtn.classList.add('visually-hidden');
                 Notify.failure("We're sorry, but you've reached the end of search results.")
