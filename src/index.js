@@ -72,6 +72,7 @@ window.addEventListener('scroll', checkPosition)
 window.addEventListener('resize', checkPosition)
 
 function checkPosition() {
+    let query = '';
     const height = document.body.offsetHeight
     const screenHeight = window.innerHeight
 
@@ -84,7 +85,7 @@ function checkPosition() {
     if (position >= threshold) {
         page += 1;
     lightbox.destroy();
-    fetchImages(query = '', page, per_page)
+    fetchImages(query, page, per_page)
         .then(({data}) => {
             Notify.success(`Hooray! We found ${per_page} images more!`);
             onRenderGallery(data.hits)
