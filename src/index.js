@@ -1,8 +1,9 @@
-import {fetchImages} from "./modules/fetch-gallery-images";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
+
 import onRenderGallery from "./modules/render-gallery";
+import {fetchImages} from "./modules/fetch-gallery-images";
 
 const searchForm = document.querySelector('#search-form');
 const gallery = document.querySelector('.gallery');
@@ -33,6 +34,7 @@ searchForm.addEventListener('submit', (e) => {
                 Notify.failure("Sorry, there are no images matching your search query. Please try again.");
             }
             onRenderGallery(data.hits)
+            Notify.success(`Hooray! We found ${data.totalHits} images total!`);
 
             if (per_page < data.totalHits) {
                 showMoreBtn.classList.remove('visually-hidden');
@@ -61,9 +63,36 @@ showMoreBtn.addEventListener('click', () => {
             behavior: "smooth",
             });
 
-            const link = document.querySelectorAll('.gallery_link')
-            console.log(link)
             lightbox = new SimpleLightbox('.gallery a').refresh();
         })
 
 })
+
+window.addEventListener('scroll', checkPosition)
+window.addEventListener('resize', checkPosition)
+
+function checkPosition() {
+    const height = document.body.offsetHeight
+    const screenHeight = window.innerHeight
+
+    const scrolled = window.scrollY
+  
+    const threshold = height - screenHeight / 4
+  
+    const position = scrolled + screenHeight
+  
+    if (position >= threshold) {
+        page += 1;
+    lightbox.destroy();
+    fetchImages(query = '', page, per_page)
+        .then(({data}) => {
+            Notify.success(`Hooray! We found ${per_page} images more!`);
+
+            if(page >= Math.round((data.totalHits / data.hits.length))) {
+                showMoreBtn.classList.add('visually-hidden');
+                Notify.failure("We're sorry, but you've reached the end of search results.")
+            }
+            lightbox = new SimpleLightbox('.gallery a').refresh();
+        })
+    }
+  }
