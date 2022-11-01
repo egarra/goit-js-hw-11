@@ -28,13 +28,13 @@ searchForm.addEventListener('submit', (e) => {
         Notify.failure('Please, enter the name of the image');
         showMoreBtn.classList.add('visually-hidden');
         return;
-    }
+    } 
 
     fetchImages(query, page, per_page)
         .then(({data}) => {
-            if (data.hits.length === 0) {
+
+            if (data.hits) {
                 Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-                return;
             }
             onRenderGallery(data.hits)
             Notify.success(`Hooray! We found ${data.totalHits} images total!`);
