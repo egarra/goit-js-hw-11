@@ -18,11 +18,15 @@ searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
     document.body.style.marginBottom = '50px';
     page = 1;
-    gallery.innerHTML = '';
-    showMoreBtn.classList.add('visually-hidden');
 
     let {searchQuery} = e.currentTarget;
+    if (query === searchQuery.value) {
+        return
+    }
     query = searchQuery.value;
+
+    gallery.innerHTML = '';
+    showMoreBtn.classList.add('visually-hidden');
 
     if (query === '') {
         Notify.failure('Please, enter the name of the image');
