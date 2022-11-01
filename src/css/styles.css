@@ -23,7 +23,7 @@ body {
 .search-form {
   height: 30px;
   padding: 50px 0;
-  max-width: 1600px;
+  width: 100%;
   background-color: #20B2AA;
   display: flex;
   justify-content: center;
@@ -72,6 +72,7 @@ body {
   padding: 0;
   list-style: none;
   margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 .gallery__photo-card {
