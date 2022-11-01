@@ -31,14 +31,16 @@ searchForm.addEventListener('submit', (e) => {
     } 
 
     fetchImages(query, page, per_page)
-        .then(({data}) => {
+        .then(({data}) => { 
 
-            if (data.hits) {
+            if (data.hits.length === 0) {
                 Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+                return;
             }
             onRenderGallery(data.hits)
+    
             Notify.success(`Hooray! We found ${data.totalHits} images total!`);
-
+            console.log(gallery.childNodes)
             if (per_page < data.totalHits) {
                 showMoreBtn.classList.remove('visually-hidden');
             }
