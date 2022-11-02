@@ -44,7 +44,6 @@ searchForm.addEventListener('submit', (e) => {
             onRenderGallery(data.hits)
     
             Notify.success(`Hooray! We found ${data.totalHits} images total!`);
-            console.log(gallery.childNodes)
             if (per_page < data.totalHits) {
                 showMoreBtn.classList.remove('visually-hidden');
             }
