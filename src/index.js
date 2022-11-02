@@ -14,7 +14,10 @@ let per_page = 40;
 let simpleLightBox;
 let query = '';
 
-searchForm.addEventListener('submit', (e) => {
+searchForm.addEventListener('submit', onSubmit)
+showMoreBtn.addEventListener('click', onLoadMore)
+
+async function onSubmit (e) {
     e.preventDefault();
     document.body.style.marginBottom = '50px';
     page = 1;
@@ -34,50 +37,44 @@ searchForm.addEventListener('submit', (e) => {
         return;
     } 
 
-    fetchImages(query, page, per_page)
-        .then(({data}) => { 
+    const response = await fetchImages(query, page, per_page)
 
-            if (data.hits.length === 0) {
-                Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-                return;
-            }
-            onRenderGallery(data.hits)
+    if (response.data.hits.length === 0) {
+        Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+        return;
+    }
+    onRenderGallery(response.data.hits)
     
-            Notify.success(`Hooray! We found ${data.totalHits} images total!`);
-            if (per_page < data.totalHits) {
-                showMoreBtn.classList.remove('visually-hidden');
-            }
-            simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-        })
-        .catch(() => {})
-})
+    Notify.success(`Hooray! We found ${response.data.totalHits} images total!`);
+    if (per_page < response.data.totalHits) {
+        showMoreBtn.classList.remove('visually-hidden');
+    }
+    simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+        
+}
 
-showMoreBtn.addEventListener('click', () => {
+async function onLoadMore () {
     page += 1;
     simpleLightBox.destroy();
-    fetchImages(query, page, per_page)
-        .then(({data}) => {
+    const response = await fetchImages(query, page, per_page)
+    onRenderGallery(response.data.hits)
 
-            onRenderGallery(data.hits)
+    simpleLightBox = new SimpleLightbox('.gallery a').refresh();
 
-            simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    if(page > Math.ceil((response.data.totalHits / per_page))) {
+        showMoreBtn.classList.add('visually-hidden');
+        document.body.style.marginBottom = '80px'
+        Notify.failure("We're sorry, but you've reached the end of search results.")
+        return;
+    }
 
-            if(page > Math.ceil((data.totalHits / per_page))) {
-                showMoreBtn.classList.add('visually-hidden');
-                document.body.style.marginBottom = '80px'
-                Notify.failure("We're sorry, but you've reached the end of search results.")
-                return;
-            }
-            const { height } = gallery.firstElementChild.getBoundingClientRect();
+    const { height } = gallery.firstElementChild.getBoundingClientRect();
 
-            window.scrollBy({
-            top: height * 2,
-            behavior: "smooth",
-            });
-        })
-        .catch(error => error)
-
-})
+    window.scrollBy({
+    top: height * 2,
+    behavior: "smooth",
+    });
+}
 
 /* window.addEventListener('scroll', checkPosition)
 
