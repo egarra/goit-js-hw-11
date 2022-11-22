@@ -18,6 +18,7 @@ searchForm.addEventListener('submit', onSubmit)
 showMoreBtn.addEventListener('click', onLoadMore)
 
 async function onSubmit (e) {
+    window.addEventListener('scroll', checkPosition)
     e.preventDefault();
     document.body.style.marginBottom = '50px';
     page = 1;
@@ -76,31 +77,30 @@ async function onLoadMore () {
     });
 }
 
-/* window.addEventListener('scroll', checkPosition)
-
-function checkPosition() {
+async function checkPosition() {
     const height = document.body.offsetHeight
     const screenHeight = window.innerHeight
-
     const scrolled = window.scrollY
-  
     const threshold = height - screenHeight / 4
-  
     const position = scrolled + screenHeight
 
+    const response = await fetchImages(query, page, per_page)
+
+    const { data: {totalHits}, data: {hits}} = response;
+
+    if (page > Math.ceil((totalHits / per_page)) && position >= threshold) {
+        showMoreBtn.classList.add('visually-hidden');
+        Notify.failure("We're sorry, but you've reached the end of search results.")  
+        window.removeEventListener('scroll', checkPosition)
+        return;
+    }
     if (position >= threshold) {
         page += 1;
-        simpleLightBox.destroy()
-
-    fetchImages(query, page, per_page)
-        .then(({data}) => {
-            simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-            onRenderGallery(data.hits)
-            if(page > Math.ceil((data.totalHits / per_page)) && position >= threshold) {
-                showMoreBtn.classList.add('visually-hidden');
-                return Notify.failure("We're sorry, but you've reached the end of search results.")
-            }    
-        })
-        .catch(error => console.log(error))
+    try{
+        onRenderGallery(hits)
+        simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+        
+    }catch(err) {console.log(err)}
     }
-  } */
+
+}
