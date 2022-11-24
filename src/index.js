@@ -84,23 +84,25 @@ async function checkPosition() {
     const threshold = height - screenHeight / 4
     const position = scrolled + screenHeight
 
-    const response = await fetchImages(query, page, per_page)
 
-    const { data: {totalHits}, data: {hits}} = response;
-
-    if (page > Math.ceil((totalHits / per_page)) && position >= threshold) {
-        showMoreBtn.classList.add('visually-hidden');
-        Notify.failure("We're sorry, but you've reached the end of search results.")  
-        window.removeEventListener('scroll', checkPosition)
-        return;
-    }
-    if (position >= threshold) {
-        page += 1;
     try{
-        onRenderGallery(hits)
-        simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-        
-    }catch(err) {console.log(err)}
-    }
+        const response = await fetchImages(query, page, per_page)
+
+        const { data: {totalHits}, data: {hits}} = response;
+    
+        if (page > Math.ceil((totalHits / per_page)) && position >= threshold) {
+            showMoreBtn.classList.add('visually-hidden');
+            Notify.failure("We're sorry, but you've reached the end of search results.")  
+            window.removeEventListener('scroll', checkPosition)
+            return;
+        }
+    
+        if (position >= threshold) {
+            page += 1;
+            onRenderGallery(hits)
+            simpleLightBox = new SimpleLightbox('.gallery a').refresh();     
+        }
+    }catch(err){console.log(err)}
+
 
 }
